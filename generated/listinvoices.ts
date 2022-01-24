@@ -45,18 +45,12 @@ export interface ListinvoicesResponse {
     /**
      * UNIX timestamp of when it will become / became unpayable
      */
-    expires_at: {
-      [k: string]: unknown;
-    };
-    msatoshi?: {
-      [k: string]: unknown;
-    };
+    expires_at: number;
+    msatoshi?: number;
     /**
      * the amount required to pay this invoice
      */
-    amount_msat?: {
-      [k: string]: unknown;
-    };
+    amount_msat?: number;
     /**
      * the BOLT11 string (always present unless *bolt12* is)
      */
@@ -68,9 +62,7 @@ export interface ListinvoicesResponse {
     /**
      * the *id* of our offer which created this invoice (**experimental-offers** only).
      */
-    local_offer_id?: {
-      [k: string]: unknown;
-    };
+    local_offer_id?: string;
     /**
      * the optional *payer_note* from invoice_request which created this invoice (**experimental-offers** only).
      */
@@ -78,30 +70,20 @@ export interface ListinvoicesResponse {
     /**
      * Unique incrementing index for this payment
      */
-    pay_index?: {
-      [k: string]: unknown;
-    };
-    msatoshi_received?: {
-      [k: string]: unknown;
-    };
+    pay_index?: number;
+    msatoshi_received?: number;
     /**
      * the amount actually received (could be slightly greater than *amount_msat*, since clients may overpay)
      */
-    amount_received_msat?: {
-      [k: string]: unknown;
-    };
+    amount_received_msat?: number;
     /**
      * UNIX timestamp of when it was paid
      */
-    paid_at?: {
-      [k: string]: unknown;
-    };
+    paid_at?: number;
     /**
      * proof of payment
      */
-    payment_preimage?: {
-      [k: string]: unknown;
-    };
+    payment_preimage?: string;
     [k: string]: unknown;
   }[];
 }
