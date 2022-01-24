@@ -18,9 +18,9 @@
  * efficiently than trying each one, so performance is not a concern.
 */
 export interface CheckmessageRequest {
-  message: /* GUESSED */ string;
-  zbase: /* GUESSED */ string;
-  pubkey?: /* GUESSED */ string;
+  message: string;
+  zbase: string;
+  pubkey?: string;
 }
 
 export type CheckmessageResponse = {

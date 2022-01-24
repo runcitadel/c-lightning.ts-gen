@@ -17,7 +17,7 @@
  * messages within error replies.
 */
 export interface AddgossipRequest {
-  message: /* GUESSED */ string;
+  message: string;
 }
 
 export interface AddgossipResponse {}

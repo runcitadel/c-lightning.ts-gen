@@ -82,27 +82,38 @@
  * close. The default of unilaterally closing after 48 hours is usually a
  * reasonable indication that you can no longer contact the peer.
  * 
- * NOTES
- * -----
- * 
- * Prior to 0.7.2, **close** took two parameters: *force* and *timeout*.
- * *timeout* was the number of seconds before *force* took effect (default,
- * 30), and *force* determined whether the result was a unilateral close or
- * an RPC error (default). Even after the timeout, the channel would be
- * closed if the peer reconnected.
- * 
  * NOTIFICATIONS
  * -------------
  * Notifications may be returned indicating what is going on, especially
  * if the peer is offline and we are waiting.
 */
 export interface CloseRequest {
-  id: /* GUESSED */ string;
-  unilateraltimeout?: /* GUESSED */ string;
-  destination?: /* GUESSED */ string;
-  fee_negotiation_step?: /* GUESSED */ string;
-  wrong_funding?: /* GUESSED */ string;
-  force_lease_closed?: /* GUESSED */ string;
+  id: string;
+  unilateraltimeout?: number;
+  destination?: string;
+  fee_negotiation_step?: string;
+  wrong_funding?: string;
+  force_lease_closed?: string;
+  /**
+    * *feerange* is an optional array [ *min*, *max* ], indicating the
+    * minimum and maximum feerates to offer: the peer will obey these if it
+    * supports the quick-close protocol.  *slow* and *unilateral_close* are
+    * the defaults.
+    * 
+    * Rates are one of the strings *urgent* (aim for next block), *normal*
+    * (next 4 blocks or so) or *slow* (next 100 blocks or so) to use
+    * lightningd's internal estimates, or one of the names from
+    * lightning-feerates(7).  Otherwise, they can be numbers with
+    * an optional suffix: *perkw* means the number is interpreted as
+    * satoshi-per-kilosipa (weight), and *perkb* means it is interpreted
+    * bitcoind-style as satoshi-per-kilobyte. Omitting the suffix is
+    * equivalent to *perkb*.
+    * 
+    * Note that the maximum fee will be capped at the final commitment
+    * transaction fee (unless the experimental anchor-outputs option is
+    * negotiated).
+    */
+  feerange?: (string | number)[];
 }
 
 export interface CloseResponse {

@@ -33,10 +33,12 @@
  * another node. Once the peer is connected a channel can be opened with
  * lightning-fundchannel(7).
 */
-export interface ConnectRequest {
-  id: /* GUESSED */ string;
-  host?: /* GUESSED */ string;
-  port?: /* GUESSED */ string;
+export type ConnectRequest = {
+  id: string;
+} | {
+  id: string;
+  host: string;
+  port: number;
 }
 
 export interface ConnectResponse {

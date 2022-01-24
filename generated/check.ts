@@ -18,8 +18,8 @@
  * find a route even if checking the parameters succeeds.
 */
 export interface CheckRequest {
-  command_to_check: /* GUESSED */ string;
-  parameters?: /* GUESSED */ string;
+  command_to_check: string;
+  parameters?: unknown;
 }
 
 export interface CheckResponse {
