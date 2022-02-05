@@ -6,7 +6,8 @@
         "outDir": "lib",
         "declaration": true,
         "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "incremental": true
     },
     "include": [
         "src/**/*.ts"

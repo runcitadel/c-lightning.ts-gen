@@ -3,6 +3,15 @@ import * as fsPromises from "fs/promises";
 import { compile } from "json-schema-to-typescript";
 import camelcase from "camelcase";
 import pascalcase from "pascalcase";
+import quicktypeCore from "quicktype-core";
+
+const {
+  quicktype,
+  InputData,
+  jsonInputForTargetLanguage,
+  JSONSchemaInput,
+  FetchingJSONSchemaStore,
+} = quicktypeCore;
 
 /**
  * Parse a synopsis
@@ -83,20 +92,22 @@ function fixHex(obj: any) {
       obj.type === "point32" ||
       obj.type === "bip340sig")
   ) {
-    obj.tsType = `/* ${obj.type} */ string`;
+    obj.type = `string`;
   }
   if (
     obj &&
     (obj.type === "u8" || obj.type === "u16" || obj.type === "u32" || obj.type === "msat")
   ) {
-    obj.tsType = `/* ${obj.type} */ number`;
+    obj.type = `number`;
   }
   if (obj && obj.type === "u64") {
     // We should look into BigInt
-    obj.tsType = `/* ${obj.type} */ number`;
+    obj.type = `number`;
   }
   if (obj && typeof obj === "object") {
     Object.keys(obj).forEach((key) => {
+      if(obj[key] && obj[key].deprecated)
+        delete obj[key];
       fixHex(obj[key]);
     });
   }
@@ -158,6 +169,12 @@ for (const file of files) {
       realSynopsis = lines[i] + " " + realSynopsis;
     }
     let parsedSynopsis = parseSynopsis(realSynopsis);
+
+  const { lines: outputLines } = await quicktypeJSONSchema(
+    "typescript",
+    pascalcase(parsedSynopsis.name) + "Response",
+    JSON.stringify(jsonSchema)
+  );
     const tsFileContents = `/**
  * ${heading}
  * 
@@ -168,18 +185,16 @@ for (const file of files) {
 ${descriptionLines}
 ${parsedSynopsisToTsInterface(parsedSynopsis)}
 
-${await compile(jsonSchema, pascalcase(parsedSynopsis.name) + "Response", {
-  bannerComment: "",
-})}
+${outputLines.join("\n")}
 `;
     await fsPromises.writeFile(
       "./generated/" + fileName + ".ts",
       tsFileContents
     );
-    /*await fsPromises.writeFile(
+    await fsPromises.writeFile(
       "./debug/" + fileName + ".json",
       JSON.stringify(jsonSchema),
-    );*/
+    );
     let fnArguments = "";
     let requestType = pascalcase(parsedSynopsis.name) + "Request";
     let responseType = pascalcase(parsedSynopsis.name) + "Response";
@@ -231,3 +246,23 @@ export default class RPCClient {
 }
 `
 );
+
+async function quicktypeJSONSchema(targetLanguage: string, typeName: string, jsonSchemaString: string) {
+  const schemaInput = new JSONSchemaInput(new FetchingJSONSchemaStore());
+
+  // We could add multiple schemas for multiple types,
+  // but here we're just making one type from JSON schema.
+  await schemaInput.addSource({ name: typeName, schema: jsonSchemaString });
+
+  const inputData = new InputData();
+  inputData.addInput(schemaInput);
+
+  return await quicktype({
+    inputData,
+    lang: targetLanguage,
+    rendererOptions: {
+      'just-types': "true",
+    }
+  });
+}
+
