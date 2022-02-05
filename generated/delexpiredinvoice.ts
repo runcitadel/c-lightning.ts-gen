@@ -13,7 +13,7 @@
  * deleted.
 */
 export interface DelexpiredinvoiceRequest {
-  maxexpirytime?: /* GUESSED */ string;
+  maxexpirytime?: number;
 }
 
 export interface DelexpiredinvoiceResponse {}

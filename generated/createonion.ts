@@ -87,10 +87,14 @@
  * routing.
 */
 export interface CreateonionRequest {
-  hops: /* GUESSED */ string;
-  assocdata: /* GUESSED */ string;
-  session_key?: /* GUESSED */ string;
-  onion_size?: /* GUESSED */ string;
+  hops: {
+		pubkey: string;
+		payload: string;
+    style?: "legacy";
+	}[];
+  assocdata: string;
+  session_key?: string;
+  onion_size?: number | string;
 }
 
 export interface CreateonionResponse {

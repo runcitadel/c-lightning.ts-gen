@@ -79,7 +79,9 @@ function fixHex(obj: any) {
       obj.type === "txid" ||
       obj.type == "pubkey" ||
       obj.type === "signature" ||
-      obj.type === "short_channel_id")
+      obj.type === "short_channel_id" ||
+      obj.type === "point32" ||
+      obj.type === "bip340sig")
   ) {
     obj.tsType = `/* ${obj.type} */ string`;
   }
@@ -174,6 +176,10 @@ ${await compile(jsonSchema, pascalcase(parsedSynopsis.name) + "Response", {
       "./generated/" + fileName + ".ts",
       tsFileContents
     );
+    /*await fsPromises.writeFile(
+      "./debug/" + fileName + ".json",
+      JSON.stringify(jsonSchema),
+    );*/
     let fnArguments = "";
     let requestType = pascalcase(parsedSynopsis.name) + "Request";
     let responseType = pascalcase(parsedSynopsis.name) + "Response";
@@ -213,19 +219,10 @@ export default class RPCClient {
       };
       client.write(JSON.stringify(payload));
 
-      client.on("connect", () => {
-        console.debug("ON CONNECT connected!");
-      });
-
       client.on("data", (data) => {
-        console.debug("ON DATA ", data.toString("utf8"));
         client.end();
-        try {
-          JSON.parse(data.toString("utf8"));
-          return resolve(JSON.parse(data.toString("utf8")) as ReturnType);
-        } catch {
-          return resolve(data.toString("utf8") as unknown as ReturnType);
-        }
+        let parsed = JSON.parse(data.toString("utf8"));
+        return resolve(parsed.result as ReturnType);
       });
     });
   }

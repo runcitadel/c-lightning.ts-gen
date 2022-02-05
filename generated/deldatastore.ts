@@ -13,8 +13,8 @@
  * is specified and the generation of the data does not exactly match.
 */
 export interface DeldatastoreRequest {
-  key: /* GUESSED */ string;
-  generation?: /* GUESSED */ string;
+  key: string;
+  generation?: number;
 }
 
 export interface DeldatastoreResponse {

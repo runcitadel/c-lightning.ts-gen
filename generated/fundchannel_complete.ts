@@ -21,8 +21,8 @@
  * unrecoverable loss of funds.
 */
 export interface FundchannelCompleteRequest {
-  id: /* GUESSED */ string;
-  psbt: /* GUESSED */ string;
+  id: string;
+  psbt: string;
 }
 
 export interface FundchannelCompleteResponse {

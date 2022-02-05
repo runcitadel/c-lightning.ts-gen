@@ -87,18 +87,18 @@
  * invoices will be expired (i.e. only one person can pay this offer).
 */
 export interface OfferRequest {
-  amount: /* GUESSED */ string;
-  description: /* GUESSED */ string;
-  issuer?: /* GUESSED */ string;
+  amount: number | string;
+  description: string;
+  issuer?: string;
   label?: /* GUESSED */ string;
   quantity_min?: /* GUESSED */ string;
   quantity_max?: /* GUESSED */ string;
   absolute_expiry?: /* GUESSED */ string;
   recurrence?: /* GUESSED */ string;
-  recurrence_base?: /* GUESSED */ string;
+  recurrence_base?: string | number;
   recurrence_paywindow?: /* GUESSED */ string;
   recurrence_limit?: /* GUESSED */ string;
-  single_use?: /* GUESSED */ string;
+  single_use?: boolean;
 }
 
 export interface OfferResponse {

@@ -13,8 +13,8 @@
  * *status* changing just before this command is invoked!
 */
 export interface DelinvoiceRequest {
-  label: /* GUESSED */ string;
-  status: /* GUESSED */ string;
+  label: string;
+  status: "paid" | "expired" | "unpaid";
 }
 
 export type DelinvoiceResponse = {

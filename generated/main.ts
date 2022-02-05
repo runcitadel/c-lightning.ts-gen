@@ -98,19 +98,10 @@ export default class RPCClient {
       };
       client.write(JSON.stringify(payload));
 
-      client.on("connect", () => {
-        console.debug("ON CONNECT connected!");
-      });
-
       client.on("data", (data) => {
-        console.debug("ON DATA ", data.toString("utf8"));
         client.end();
-        try {
-          JSON.parse(data.toString("utf8"));
-          return resolve(JSON.parse(data.toString("utf8")) as ReturnType);
-        } catch {
-          return resolve(data.toString("utf8") as unknown as ReturnType);
-        }
+        let parsed = JSON.parse(data.toString("utf8"));
+        return resolve(parsed.result as ReturnType);
       });
     });
   }

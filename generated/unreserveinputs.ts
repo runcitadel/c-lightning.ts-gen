@@ -16,7 +16,7 @@
  * reservation by; default is 72.
 */
 export interface UnreserveinputsRequest {
-  psbt: /* GUESSED */ string;
+  psbt: string;
   reserve?: /* GUESSED */ string;
 }
 

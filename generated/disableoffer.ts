@@ -26,7 +26,7 @@
  * ```
 */
 export interface DisableofferRequest {
-  offer_id: /* GUESSED */ string;
+  offer_id: string;
 }
 
 export interface DisableofferResponse {

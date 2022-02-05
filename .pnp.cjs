@@ -19,14 +19,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     ],
     "dependencyTreeRoots": [
       {
-        "name": "c-lightning-client",
+        "name": "@runcitadel/c-lightning-client-generator",
         "reference": "workspace:."
       }
     ],
     "enableTopLevelFallback": true,
     "ignorePatternData": "(^(?:\\.yarn\\/sdks(?:\\/(?!\\.{1,2}(?:\\/|$))(?:(?:(?!(?:^|\\/)\\.{1,2}(?:\\/|$)).)*?)|$))$)",
     "fallbackExclusionList": [
-      ["c-lightning-client", ["workspace:."]]
+      ["@runcitadel/c-lightning-client-generator", ["workspace:."]]
     ],
     "fallbackPool": [
     ],
@@ -65,6 +65,21 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jsdevtools/ono", "npm:7.1.3"]
           ],
           "linkType": "HARD",
+        }]
+      ]],
+      ["@runcitadel/c-lightning-client-generator", [
+        ["workspace:.", {
+          "packageLocation": "./",
+          "packageDependencies": [
+            ["@runcitadel/c-lightning-client-generator", "workspace:."],
+            ["@types/node", "npm:17.0.10"],
+            ["@types/pascalcase", "npm:1.0.1"],
+            ["camelcase", "npm:6.3.0"],
+            ["json-schema-to-typescript", "npm:10.1.5"],
+            ["pascalcase", "npm:2.0.0"],
+            ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"]
+          ],
+          "linkType": "SOFT",
         }]
       ]],
       ["@types/glob", [
@@ -168,21 +183,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["concat-map", "npm:0.0.1"]
           ],
           "linkType": "HARD",
-        }]
-      ]],
-      ["c-lightning-client", [
-        ["workspace:.", {
-          "packageLocation": "./",
-          "packageDependencies": [
-            ["c-lightning-client", "workspace:."],
-            ["@types/node", "npm:17.0.10"],
-            ["@types/pascalcase", "npm:1.0.1"],
-            ["camelcase", "npm:6.3.0"],
-            ["json-schema-to-typescript", "npm:10.1.5"],
-            ["pascalcase", "npm:2.0.0"],
-            ["typescript", "patch:typescript@npm%3A4.5.5#~builtin<compat/typescript>::version=4.5.5&hash=493e53"]
-          ],
-          "linkType": "SOFT",
         }]
       ]],
       ["call-me-maybe", [

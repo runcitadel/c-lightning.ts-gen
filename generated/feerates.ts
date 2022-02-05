@@ -39,7 +39,7 @@
  * which will override the recommended feerates returned by **feerates**.
 */
 export interface FeeratesRequest {
-  style: /* GUESSED */ string;
+  style: "perkw" | "perkb";
 }
 
 export interface FeeratesResponse {

@@ -27,11 +27,11 @@
  * or "must-append".
 */
 export interface DatastoreRequest {
-  key: /* GUESSED */ string;
-  string?: /* GUESSED */ string;
-  hex?: /* GUESSED */ string;
-  mode?: /* GUESSED */ string;
-  generation?: /* GUESSED */ string;
+  key: string | string[];
+  string?: string;
+  hex?: string;
+  mode?: "must-create" | "must-replace" | "create-or-replace" | "must-append" | "create-or-append";
+  generation?: string;
 }
 
 export interface DatastoreResponse {

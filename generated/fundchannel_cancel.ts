@@ -20,7 +20,7 @@
  * to remote peer again before opening channel.
 */
 export interface FundchannelCancelRequest {
-  id: /* GUESSED */ string;
+  id: string;
 }
 
 export interface FundchannelCancelResponse {

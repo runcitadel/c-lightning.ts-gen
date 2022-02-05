@@ -10,8 +10,8 @@
  * specified by the BOLT 11 specification.
 */
 export interface DecodepayRequest {
-  bolt11: /* GUESSED */ string;
-  description?: /* GUESSED */ string;
+  bolt11: string;
+  description?: string;
 }
 
 export interface DecodepayResponse {

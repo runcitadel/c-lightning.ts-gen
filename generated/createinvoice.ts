@@ -23,9 +23,9 @@
  * the invoice.
 */
 export interface CreateinvoiceRequest {
-  invstring: /* GUESSED */ string;
-  label: /* GUESSED */ string;
-  preimage: /* GUESSED */ string;
+  invstring: string;
+  label: string | number;
+  preimage: string;
 }
 
 export interface CreateinvoiceResponse {

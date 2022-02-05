@@ -1,5 +1,5 @@
 {
-  "name": "c-lightning-client",
+  "name": "@runcitadel/c-lightning-client-generator",
   "packageManager": "yarn@3.1.1",
   "devDependencies": {
     "@types/node": "^17.0.10",

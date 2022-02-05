@@ -41,14 +41,14 @@
  * *payer_note* is an optional payer note to include in the fetched invoice.
 */
 export interface FetchinvoiceRequest {
-  offer: /* GUESSED */ string;
-  msatoshi?: /* GUESSED */ string;
-  quantity?: /* GUESSED */ string;
-  recurrence_counter?: /* GUESSED */ string;
-  recurrence_start?: /* GUESSED */ string;
-  recurrence_label?: /* GUESSED */ string;
-  timeout?: /* GUESSED */ string;
-  payer_note?: /* GUESSED */ string;
+  offer: string;
+  msatoshi?: string | number;
+  quantity?: string  | number;
+  recurrence_counter?: string  | number;
+  recurrence_start?: string  | number;
+  recurrence_label?: string;
+  timeout?: string  | number;
+  payer_note?: string;
 }
 
 export interface FetchinvoiceResponse {

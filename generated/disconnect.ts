@@ -28,8 +28,8 @@
  * connection.
 */
 export interface DisconnectRequest {
-  id: /* GUESSED */ string;
-  force?: /* GUESSED */ string;
+  id: string;
+  force?: boolean;
 }
 
 export interface DisconnectResponse {}
