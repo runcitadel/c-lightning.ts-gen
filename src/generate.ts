@@ -223,11 +223,11 @@ export default class RPCClient {
   constructor(public socketPath: string) {}
   protected call<ReturnType = unknown>(
     method: string,
-    params = null
+    params: unknown = null
   ): Promise<ReturnType> {
     return new Promise((resolve, reject) => {
-      let client = net.createConnection(this.socketPath);
-      let payload = {
+      const client = net.createConnection(this.socketPath);
+      const payload = {
         method: method,
         params: params,
         id: 0,
@@ -236,7 +236,7 @@ export default class RPCClient {
 
       client.on("data", (data) => {
         client.end();
-        let parsed = JSON.parse(data.toString("utf8"));
+        const parsed = JSON.parse(data.toString("utf8"));
         return resolve(parsed.result as ReturnType);
       });
     });
