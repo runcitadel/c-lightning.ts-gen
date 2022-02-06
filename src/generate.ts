@@ -1,6 +1,5 @@
 import * as fs from "fs";
 import * as fsPromises from "fs/promises";
-import { compile } from "json-schema-to-typescript";
 import camelcase from "camelcase";
 import pascalcase from "pascalcase";
 import quicktypeCore from "quicktype-core";
@@ -204,7 +203,7 @@ ${outputLines.join("\n")}
     generatedMethods += `
   ${methodDescriptionLines}
   ${camelcase(parsedSynopsis.name)}(${fnArguments}): Promise<${responseType}> {
-    return this.call<${responseType}>("${parsedSynopsis.name}", payload);
+    return this._call<${responseType}>("${parsedSynopsis.name}", payload);
   }
     `;
     imports += `
@@ -220,13 +219,13 @@ import * as net from "net";
 ${imports}
 
 export default class RPCClient {
-  constructor(public socketPath: string) {}
-  protected call<ReturnType = unknown>(
+  constructor(private _socketPath: string) {}
+  private _call<ReturnType = unknown>(
     method: string,
     params: unknown = null
   ): Promise<ReturnType> {
     return new Promise((resolve, reject) => {
-      const client = net.createConnection(this.socketPath);
+      const client = net.createConnection(this._socketPath);
       const payload = {
         method: method,
         params: params,
