@@ -80,11 +80,11 @@ function parseSynopsis(synopsis: string): {
   parameters: string[];
   optionalParameters: string[];
 } {
-  const parts = synopsis.split("**");
+  const parts = synopsis.replaceAll("\\_", "_").split("**");
   if (!parts[1]) {
     console.log(synopsis);
   }
-  const name = parts[1].trim().replace("\\_", "_");
+  const name = parts[1].trim();
   const parameters = parts[2]
     .split("[")[0]
     .split("*")
@@ -268,16 +268,6 @@ for (const file of files) {
  * 
  */`));
 
-    if(oldFile.startsWith(`/**
- * ${heading}
- * 
- * ${realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]")}
- * 
- */`)) {
-      // This is just to keep the changes small with this commit and introduce
-      // The removal of the \ at a later commit
-      realSynopsis = realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]");
-    }
   const oldSynopsis = "export " + oldFile.split("export")[1]?.trim();
 
   const { lines: outputLines } = await quicktypeJSONSchema(
@@ -352,8 +342,6 @@ export type { ${stringExports} } from "./${fileName}";`;
 await fsPromises.writeFile(
   "./c-lightning.ts/src/generated/main.ts",
   `import { EventEmitter } from "events";
-
-
 ${imports}
 
 const transformMap: any = ${JSON.stringify(transformMap, undefined, 2)}
@@ -408,7 +396,6 @@ export function transform<ReturnType = unknown>(
 }
 export default abstract class RPCClient extends EventEmitter {
   abstract call<ReturnType extends {} = {}>(method: string, params: unknown): Promise<ReturnType>
-
   ${generatedMethods}
 }
 
