@@ -3,6 +3,55 @@ import * as fsPromises from "fs/promises";
 import camelcase from "camelcase";
 import pascalcase from "pascalcase";
 import quicktypeCore from "quicktype-core";
+import ts from 'typescript';
+import { resolve } from 'path';
+
+// Join two strings and make the first character of each uppercase
+function joinUpperCaseFirst(a: string, b: string) {
+  return a.charAt(0).toUpperCase() + a.slice(1) + b.charAt(0).toUpperCase() + b.slice(1);
+}
+
+function getExports(tsFile: string, complierOpts: ts.CompilerOptions = { allowJs: true }): ts.Symbol[] {
+  const fName = resolve(tsFile);
+  if (!fs.existsSync(fName)) {
+    throw new Error(`The file ${fName} does not exist`);
+  }
+  const program = ts.createProgram([fName], complierOpts);
+  const checker = program.getTypeChecker();
+  const sourceFile = program.getSourceFile(fName);
+  if (!sourceFile) return [];
+  const exportSymbol = checker.getSymbolAtLocation(sourceFile?.getChildAt(0));
+  // @ts-ignore see: https://stackoverflow.com/questions/62865648/how-should-i-get-common-js-exports-with-the-typescript-compiler-api
+  const exps = checker.getExportsAndPropertiesOfModule(exportSymbol || sourceFile.symbol);
+  return exps;  
+}
+
+export function isObject(item: any): boolean {
+  return (item && typeof item === 'object' && !Array.isArray(item));
+}
+
+/**
+ * Deep merge two objects.
+ * @param target
+ * @param ...sources
+ */
+export function mergeDeep(target: any, ...sources: any[]): any {
+  if (!sources.length) return target;
+  const source = sources.shift();
+
+  if (isObject(target) && isObject(source)) {
+    for (const key in source) {
+      if (isObject(source[key])) {
+        if (!target[key]) Object.assign(target, { [key]: {} });
+        mergeDeep(target[key], source[key]);
+      } else {
+        Object.assign(target, { [key]: source[key] });
+      }
+    }
+  }
+
+  return mergeDeep(target, ...sources);
+}
 
 const {
   quicktype,
@@ -11,6 +60,8 @@ const {
   FetchingJSONSchemaStore,
 } = quicktypeCore;
 
+let transformMap: any = {};
+let transformKeys: Record<string, string[]> = {};
 /**
  * Parse a synopsis
  *
@@ -33,7 +84,7 @@ function parseSynopsis(synopsis: string): {
   if (!parts[1]) {
     console.log(synopsis);
   }
-  const name = parts[1].trim();
+  const name = parts[1].trim().replace("\\_", "_");
   const parameters = parts[2]
     .split("[")[0]
     .split("*")
@@ -79,7 +130,7 @@ function parsedSynopsisToTsInterface(synopsis: {
 }
 
 // Recursively find all keys of an object called "type", then set them to "string" if they are "hex"
-function fixHex(obj: any) {
+function fixHex(obj: any, method: string, key: string, parents: string[] = []) {
   if (
     obj &&
     (obj.type === "hex" ||
@@ -94,8 +145,32 @@ function fixHex(obj: any) {
   }
   if (
     obj &&
-    (obj.type === "u8" || obj.type === "u16" || obj.type === "u32" || obj.type === "msat")
+    (obj.type === "u8" || obj.type === "u16" || obj.type === "u32")
   ) {
+    obj.type = `number`;
+  }
+  if (obj && obj.type === "msat") {
+    if(parents.length !== 0) {
+      let maybeAdd = parents.reduceRight((all, item) => ({[item]: all}), {});
+      mergeDeep(transformMap, maybeAdd);
+      let lastElement = transformMap;
+        for(let key of parents) {
+          if(parents.indexOf(key) === parents.length - 1) {
+            lastElement[key] = obj.type;
+          }
+          lastElement = lastElement[key];
+      }
+      // This is just a hack for nested properties and will lead to issues if there are
+      // multiple properties with the same name
+      // TODO: Improve this logic
+      if(!transformKeys[method]) transformKeys[method] = [];
+      transformKeys[method].push(key);
+    } else {
+      if(!transformMap[method]) transformMap[method] = {};
+      if(!transformKeys[method]) transformKeys[method] = [];
+      if(!transformMap[method][key]) transformMap[method][key] = obj.type;
+      transformKeys[method].push(key);
+    }
     obj.type = `number`;
   }
   if (obj && obj.type === "u64") {
@@ -106,16 +181,22 @@ function fixHex(obj: any) {
     Object.keys(obj).forEach((key) => {
       if(obj[key] && obj[key].deprecated)
         delete obj[key];
-      fixHex(obj[key]);
+      let newParents = [...parents];
+      if(key !== "properties" && key !== "allOf" && key !== "oneOf" && Number.isNaN(Number(key)) && key !== "then" && key !== "if" && key !== "items")
+      newParents.push(key);
+      fixHex(obj[key], method, key, newParents);
     });
   }
 }
 
 const files = fs.readdirSync("./lightning/doc");
 let imports = "";
+let exports = "";
 let generatedMethods = "";
+
 for (const file of files) {
   if (file.endsWith(".7.md")) {
+    console.log(`Parsing ${file}...`);
     const fileName = file.replace(".7.md", "").replace("lightning-", "");
     const fileContents = fs.readFileSync("./lightning/doc/" + file, "utf8");
     const jsonSchema = JSON.parse(
@@ -124,7 +205,6 @@ for (const file of files) {
         "utf8"
       )
     );
-    fixHex(jsonSchema);
     const lines = fileContents.split("\n");
     const heading = lines[0];
     // Get the line that contains "DESCRIPTION"
@@ -167,6 +247,7 @@ for (const file of files) {
       realSynopsis = lines[i] + " " + realSynopsis;
     }
     let parsedSynopsis = parseSynopsis(realSynopsis);
+    fixHex(jsonSchema, parsedSynopsis.name, "", [parsedSynopsis.name]);
 
   // Read the previous file
   let oldFile;
@@ -204,6 +285,18 @@ for (const file of files) {
     pascalcase(parsedSynopsis.name) + "Response",
     JSON.stringify(jsonSchema)
   );
+  let fullOutput = outputLines.join("\n");
+  if(transformKeys[parsedSynopsis.name]) {
+    for (let key of transformKeys[parsedSynopsis.name]) {
+      fullOutput = fullOutput.replaceAll(
+        `${key}: number;`,
+        `${key}: bigint;`
+      ).replaceAll(
+        `${key}?: number;`,
+        `${key}?: bigint;`
+      );
+    }
+  }
     const tsFileContents = `/**
  * ${heading}
  * 
@@ -214,12 +307,24 @@ for (const file of files) {
 ${descriptionLines}
 ${synopsisHasChanged ? parsedSynopsisToTsInterface(parsedSynopsis) : oldSynopsis}
 
-${outputLines.join("\n")}
+${fullOutput}
 `;
     await fsPromises.writeFile(
-      "./c-lightning.ts/src/generated/" + fileName + ".ts",
+      `./c-lightning.ts/src/generated/${fileName}.ts`,
       tsFileContents
     );
+
+    const _exports = getExports(`./c-lightning.ts/src/generated/${fileName}.ts`);
+    let stringExports = "";
+    for (const symbol of _exports) {
+      if (symbol.name === `${pascalcase(parsedSynopsis.name)}Request` || symbol.name === `${pascalcase(parsedSynopsis.name)}Response`) {
+        stringExports += `${symbol.name}, `;
+      } else {
+        stringExports += `${symbol.name} as ${joinUpperCaseFirst(fileName, symbol.name)}, `;
+      }
+    }
+    stringExports = stringExports.slice(0, -2);
+
     /*await fsPromises.writeFile(
       "./debug/" + fileName + ".json",
       JSON.stringify(jsonSchema),
@@ -233,46 +338,81 @@ ${outputLines.join("\n")}
     generatedMethods += `
   ${methodDescriptionLines}
   ${camelcase(parsedSynopsis.name)}(${fnArguments}): Promise<${responseType}> {
-    return this._call<${responseType}>("${parsedSynopsis.name}", payload);
+    return this.call<${responseType}>("${parsedSynopsis.name}", payload);
   }
     `;
     imports += `
 import type { ${requestType}, ${responseType} } from "./${fileName}";`;
+exports += `
+export type { ${stringExports} } from "./${fileName}";`;
   }
 }
+
 
 await fsPromises.writeFile(
   "./c-lightning.ts/src/generated/main.ts",
-  `
-import * as net from "net";
+  `import { EventEmitter } from "events";
+
 
 ${imports}
 
-export default class RPCClient {
-  constructor(private _socketPath: string) {}
-  private _call<ReturnType = unknown>(
-    method: string,
-    params: unknown = null
-  ): Promise<ReturnType> {
-    return new Promise((resolve, reject) => {
-      const client = net.createConnection(this._socketPath);
-      const payload = {
-        method: method,
-        params: params,
-        id: 0,
-      };
-      client.write(JSON.stringify(payload));
+const transformMap: any = ${JSON.stringify(transformMap, undefined, 2)}
 
-      client.on("data", (data) => {
-        client.end();
-        const parsed = JSON.parse(data.toString("utf8"));
-        return resolve(parsed.result as ReturnType);
-      });
-    });
+
+function transformOne(element: string, to: "msat" | string): string | number | bigint {
+  if(!element) {
+    return element;
   }
+  if(to === "msat") {
+    // If element ends with msat, remove it and convert to bigint
+    return BigInt(element.endsWith("msat") ? element.slice(0, -4) : element);
+  }
+  throw new Error("Transform not supported");
+}
+
+export function transform<ReturnType = unknown>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  transformMapData: any,
+): ReturnType {
+  if(typeof transformMapData === "string") return transformOne(data, transformMapData) as unknown as ReturnType;
+  let key: string | Record<string, string> | Record<string, Record<string, string>>;
+  for(key of Object.keys(transformMapData)) {
+    if(!data[key]) continue;
+    if(Array.isArray(data[key])) {
+      //transformMapData[key] is an object.
+      // For every key of that object, transform the value by converting every array element which matches the key
+      // with _transformOne
+      // data[key] is an array of objects
+      data[key] = data[key].map((obj: Record<string, string | number | bigint>) => {
+        for(const objKey of Object.keys(transformMapData[key as string])) {
+          if(!obj || !obj[objKey] || !transformMapData[key as string][objKey]) continue;
+          obj[objKey] = transform(obj[objKey] as string, transformMapData[key as string][objKey]);
+        }
+        return obj;
+      });
+    } else if(typeof data[key] !== "string") {
+      // data[key] is an object
+      //transformMapData[key] is an object.
+      // For every key of transformMapData[key], transform the corresponing value of data[key] by converting with _transformOne
+      for(const objKey of Object.keys(transformMapData[key as string])) {
+        if(!data[key][objKey]) continue;
+        data[key][objKey] = transform(data[key][objKey] as string, transformMapData[key as string][objKey]);
+      }
+    } else {
+      transformOne(data[key], transformMapData[key as string]);
+    }
+  }
+    return data;
+}
+export default abstract class RPCClient extends EventEmitter {
+  abstract call<ReturnType extends {} = {}>(method: string, params: unknown): Promise<ReturnType>
 
   ${generatedMethods}
 }
+
+${exports}
 `
 );
 
