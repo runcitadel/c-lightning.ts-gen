@@ -1,15 +1,7 @@
-# c-lightning-client
+# c-lightning.ts code generator
 
-A powerful client for c-lightning's JSON-RPC API, written in TypeScript.
+A helper tool used to generate most of the code in [c-lightning.ts](https://github.com/runcitadel/c-lightning.ts).
 
-### Why?
+It automatically parses the c-lightning documentation and json schemas, and generates corresponding TypeScript code.
 
-Working with c-lightning's API from TypeScript isn't easy. There are no type definitions for the API, only definitions for the responses, but that isn't enough.
-This project tries to turn those schemas, together the official documentation markdown files, into an useful TypeScript library.
-
-### How to add a new version
-
-1. Run the generate script.
-2. Check for guessed and wrong values and correct them.
-3. Test it.
-
+It also tries to respect manual changes to make regeneration if c-lightning changes easier.
