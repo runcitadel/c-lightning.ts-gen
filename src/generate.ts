@@ -7,7 +7,6 @@ import quicktypeCore from "quicktype-core";
 const {
   quicktype,
   InputData,
-  jsonInputForTargetLanguage,
   JSONSchemaInput,
   FetchingJSONSchemaStore,
 } = quicktypeCore;
