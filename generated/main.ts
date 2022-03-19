@@ -719,8 +719,8 @@ export default class RPCClient {
    * peer may disconnect when command succeeds. In this case, user need to connect
    * to remote peer again before opening channel.
   */
-  fundchannelCancel(payload: FundchannelCancelRequest): Promise<FundchannelCancelResponse> {
-    return this._call<FundchannelCancelResponse>("fundchannel_cancel", payload);
+  fundchannel\Cancel(payload: FundchannelCancelRequest): Promise<FundchannelCancelResponse> {
+    return this._call<FundchannelCancelResponse>("fundchannel\_cancel", payload);
   }
     
   /**
@@ -738,8 +738,8 @@ export default class RPCClient {
    * successfully completes. Broadcasting transaction before can lead to
    * unrecoverable loss of funds.
   */
-  fundchannelComplete(payload: FundchannelCompleteRequest): Promise<FundchannelCompleteResponse> {
-    return this._call<FundchannelCompleteResponse>("fundchannel_complete", payload);
+  fundchannel\Complete(payload: FundchannelCompleteRequest): Promise<FundchannelCompleteResponse> {
+    return this._call<FundchannelCompleteResponse>("fundchannel\_complete", payload);
   }
     
   /**
@@ -772,8 +772,8 @@ export default class RPCClient {
    * are not secured until the complete command succeeds. Broadcasting
    * transaction before that can lead to unrecoverable loss of funds.
   */
-  fundchannelStart(payload: FundchannelStartRequest): Promise<FundchannelStartResponse> {
-    return this._call<FundchannelStartResponse>("fundchannel_start", payload);
+  fundchannel\Start(payload: FundchannelStartRequest): Promise<FundchannelStartResponse> {
+    return this._call<FundchannelStartResponse>("fundchannel\_start", payload);
   }
     
   /**
@@ -2329,14 +2329,7 @@ export default class RPCClient {
    * and receive invoices.
    * 
    * *hops* is an array of json objects: *id* as a public key of the node,
-   * and either *rawtlv* containing a hexidecimal TLV to include, or any of
-   * the fields *short_channel_id*, *blinding*, *enctlv*, *invoice*,
-   * *invoice_request* and *invoice_error* to construct the onionmessage
-   * TLV with.
-   * 
-   * *reply_path* is a json object, containing a pubkey *blinding*, and an
-   * array *path* of objects containing *id* (a pubkey) and *enctlv* (a hex
-   * value, optional for final element).
+   * and *tlv* contains a hexidecimal TLV to include.
   */
   sendonionmessage(payload: SendonionmessageRequest): Promise<SendonionmessageResponse> {
     return this._call<SendonionmessageResponse>("sendonionmessage", payload);

@@ -40,7 +40,7 @@ export type ConnectRequest = {
     host: string;
     port: number;
   }
-  
+
 
 export interface ConnectResponse {
     /**

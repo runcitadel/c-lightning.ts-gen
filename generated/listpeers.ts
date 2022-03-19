@@ -89,6 +89,10 @@ export interface Channel {
     feerate?: Feerate;
     funding?: Funding;
     /**
+     * The 0-based output number of the funding transaction which opens the channel
+     */
+    funding_outnum?: number;
+    /**
      * ID of the funding transaction
      */
     funding_txid?: string;
@@ -266,6 +270,10 @@ export interface Funding {
      * Amount of channel we funded
      */
     local_msat: number;
+    /**
+     * Amount pushed from opener to peer
+     */
+    pushed_msat: number;
     /**
      * Amount of channel they funded
      */

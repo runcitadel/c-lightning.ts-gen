@@ -34,11 +34,11 @@ function parseSynopsis(synopsis: string): {
   if (!parts[1]) {
     console.log(synopsis);
   }
-  const name = parts[1].trim().replaceAll("\\", "");
+  const name = parts[1].trim();
   const parameters = parts[2]
-    .split("\\[")[0]
+    .split("[")[0]
     .split("*")
-    .map((p) => p.trim().replaceAll("\\", ""));
+    .map((p) => p.trim());
   // Remove all values which are ""
   parameters.forEach((p, i) => {
     if (p === "") {
@@ -46,14 +46,14 @@ function parseSynopsis(synopsis: string): {
     }
   });
   let optionalParameters: string[] = [];
-  if (parts[2].split("\\[")[1]) {
-    let split = parts[2].split("\\[");
+  if (parts[2].split("[")[1]) {
+    let split = parts[2].split("[");
     split.shift();
     split.forEach((p) => {
       if (!p.split("*")[1]) {
         console.log(p);
       }
-      optionalParameters.push(p.split("*")[1].trim().replaceAll("\\", ""));
+      optionalParameters.push(p.split("*")[1].trim());
     });
   }
   return {
@@ -112,16 +112,16 @@ function fixHex(obj: any) {
   }
 }
 
-const files = fs.readdirSync("./c-lightning-doc");
+const files = fs.readdirSync("./lightning/doc");
 let imports = "";
 let generatedMethods = "";
 for (const file of files) {
   if (file.endsWith(".7.md")) {
     const fileName = file.replace(".7.md", "").replace("lightning-", "");
-    const fileContents = fs.readFileSync("./c-lightning-doc/" + file, "utf8");
+    const fileContents = fs.readFileSync("./lightning/doc/" + file, "utf8");
     const jsonSchema = JSON.parse(
       fs.readFileSync(
-        "./c-lightning-doc/schemas/" + fileName + ".schema.json",
+        "./lightning/doc/schemas/" + fileName + ".schema.json",
         "utf8"
       )
     );
@@ -169,6 +169,32 @@ for (const file of files) {
     }
     let parsedSynopsis = parseSynopsis(realSynopsis);
 
+  // Read the previous file
+  const oldFile = fs.readFileSync("./generated/" + fileName + ".ts").toString("utf8").trim();
+  let synopsisHasChanged = !(oldFile.startsWith(`/**
+ * ${heading}
+ * 
+ * ${realSynopsis}
+ * 
+ */`) || oldFile.startsWith(`/**
+ * ${heading}
+ * 
+ * ${realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]")}
+ * 
+ */`));
+
+    if(oldFile.startsWith(`/**
+ * ${heading}
+ * 
+ * ${realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]")}
+ * 
+ */`)) {
+      // This is just to keep the changes small with this commit and introduce
+      // The removal of the \ at a later commit
+      realSynopsis = realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]");
+    }
+  const oldSynopsis = "export " + oldFile.split("export")[1].trim();
+
   const { lines: outputLines } = await quicktypeJSONSchema(
     "typescript",
     pascalcase(parsedSynopsis.name) + "Response",
@@ -182,7 +208,7 @@ for (const file of files) {
  */
 
 ${descriptionLines}
-${parsedSynopsisToTsInterface(parsedSynopsis)}
+${synopsisHasChanged ? parsedSynopsisToTsInterface(parsedSynopsis) : oldSynopsis}
 
 ${outputLines.join("\n")}
 `;
@@ -190,10 +216,10 @@ ${outputLines.join("\n")}
       "./generated/" + fileName + ".ts",
       tsFileContents
     );
-    await fsPromises.writeFile(
+    /*await fsPromises.writeFile(
       "./debug/" + fileName + ".json",
       JSON.stringify(jsonSchema),
-    );
+    );*/
     let fnArguments = "";
     let requestType = pascalcase(parsedSynopsis.name) + "Request";
     let responseType = pascalcase(parsedSynopsis.name) + "Response";
