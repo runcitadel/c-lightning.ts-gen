@@ -1,3 +1,6 @@
 [submodule "lightning"]
 	path = lightning
 	url = https://github.com/ElementsProject/lightning
+[submodule "c-lightning.ts"]
+	path = c-lightning.ts
+	url = https://github.com/runcitadel/c-lightning.ts

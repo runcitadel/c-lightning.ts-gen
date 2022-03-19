@@ -169,7 +169,12 @@ for (const file of files) {
     let parsedSynopsis = parseSynopsis(realSynopsis);
 
   // Read the previous file
-  const oldFile = fs.readFileSync("./generated/" + fileName + ".ts").toString("utf8").trim();
+  let oldFile;
+  try {
+    oldFile = fs.readFileSync(`./c-lightning.ts/src/generated/${fileName}.ts`).toString("utf8").trim();
+  } catch {
+    oldFile = "";
+  }
   let synopsisHasChanged = !(oldFile.startsWith(`/**
  * ${heading}
  * 
@@ -192,7 +197,7 @@ for (const file of files) {
       // The removal of the \ at a later commit
       realSynopsis = realSynopsis.replaceAll("[", "\\[").replaceAll("]", "\\]");
     }
-  const oldSynopsis = "export " + oldFile.split("export")[1].trim();
+  const oldSynopsis = "export " + oldFile.split("export")[1]?.trim();
 
   const { lines: outputLines } = await quicktypeJSONSchema(
     "typescript",
@@ -212,7 +217,7 @@ ${synopsisHasChanged ? parsedSynopsisToTsInterface(parsedSynopsis) : oldSynopsis
 ${outputLines.join("\n")}
 `;
     await fsPromises.writeFile(
-      "./generated/" + fileName + ".ts",
+      "./c-lightning.ts/src/generated/" + fileName + ".ts",
       tsFileContents
     );
     /*await fsPromises.writeFile(
@@ -237,7 +242,7 @@ import type { ${requestType}, ${responseType} } from "./${fileName}";`;
 }
 
 await fsPromises.writeFile(
-  "./generated/main.ts",
+  "./c-lightning.ts/src/generated/main.ts",
   `
 import * as net from "net";
 
