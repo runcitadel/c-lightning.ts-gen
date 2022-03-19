@@ -344,7 +344,7 @@ await fsPromises.writeFile(
   `import { EventEmitter } from "events";
 ${imports}
 
-const transformMap: any = ${JSON.stringify(transformMap, undefined, 2)}
+export const transformMap: any = ${JSON.stringify(transformMap, undefined, 2)}
 
 
 function transformOne(element: string, to: "msat" | string): string | number | bigint {
