@@ -38,14 +38,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@runcitadel/c-lightning-client-generator@workspace:."
   dependencies:
+    "@types/handlebars": ^4.1.0
     "@types/node": ^17.0.21
     "@types/pascalcase": ^1.0.1
+    "@types/prettier": ^2.4.4
     "@types/readable-stream": ^2.3.13
     "@types/urijs": ^1.19.19
     camelcase: ^6.3.0
+    handlebars: ^4.7.7
+    json-schema-ref-parser: ^9.0.9
     json-schema-to-typescript: ^10.1.5
     lodash: ^4.17.21
+    openapi-typescript-codegen: ^0.20.1
     pascalcase: ^2.0.0
+    prettier: ^2.6.0
     quicktype-core: ^6.0.70
     typescript: ^4.6.2
   languageName: unknown
@@ -58,6 +64,15 @@ __metadata:
     "@types/minimatch": "*"
     "@types/node": "*"
   checksum: 6ae717fedfdfdad25f3d5a568323926c64f52ef35897bcac8aca8e19bc50c0bd84630bbd063e5d52078b2137d8e7d3c26eabebd1a2f03ff350fff8a91e79fc19
+  languageName: node
+  linkType: hard
+
+"@types/handlebars@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@types/handlebars@npm:4.1.0"
+  dependencies:
+    handlebars: "*"
+  checksum: 536d9f690c93f5d13fcc4a37ae7dd11f41eb73c47416d56f51623aedc3b573ad9775d6618ede75d7bf9148ac75694e50f8e6ba5773de7d9f040811368c73739f
   languageName: node
   linkType: hard
 
@@ -96,7 +111,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/prettier@npm:^2.1.5":
+"@types/prettier@npm:^2.1.5, @types/prettier@npm:^2.4.4":
   version: 2.4.4
   resolution: "@types/prettier@npm:2.4.4"
   checksum: 2c2cc57efd49c7d8907415a72f96c84a6dd8696dd3bf8aa4ca3a667427bebf71cbfbc912673624bdfc935d272d1c008c639cf155f6449315990a4dc110f0d216
@@ -226,6 +241,13 @@ __metadata:
   version: 1.0.1
   resolution: "collection-utils@npm:1.0.1"
   checksum: 3e40f062f23855323018e2e07e3e4a64b9bc4bafd8420bc4ae53f7d856a24276ce51c185217d36d22eba70724951e8e3e7be8ef811f203aa048145f9c9ebe2c6
+  languageName: node
+  linkType: hard
+
+"commander@npm:^9.0.0":
+  version: 9.1.0
+  resolution: "commander@npm:9.1.0"
+  checksum: 1428319b6b90600a813c28fe1e413996d1be99bf01afe9ebc4a9fc6f8077ff3e75f11809b2d2f85bd9b13d7cb592154278e9bbfdb16dc5843cef97bcba6a9cfd
   languageName: node
   linkType: hard
 
@@ -506,6 +528,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"handlebars@npm:*, handlebars@npm:^4.7.7":
+  version: 4.7.7
+  resolution: "handlebars@npm:4.7.7"
+  dependencies:
+    minimist: ^1.2.5
+    neo-async: ^2.6.0
+    source-map: ^0.6.1
+    uglify-js: ^3.1.4
+    wordwrap: ^1.0.0
+  dependenciesMeta:
+    uglify-js:
+      optional: true
+  bin:
+    handlebars: bin/handlebars
+  checksum: 1e79a43f5e18d15742977cb987923eab3e2a8f44f2d9d340982bcb69e1735ed049226e534d7c1074eaddaf37e4fb4f471a8adb71cddd5bc8cf3f894241df5cee
+  languageName: node
+  linkType: hard
+
 "has@npm:^1.0.1, has@npm:^1.0.3":
   version: 1.0.3
   resolution: "has@npm:1.0.3"
@@ -629,7 +669,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema-ref-parser@npm:^9.0.6":
+"json-schema-ref-parser@npm:^9.0.6, json-schema-ref-parser@npm:^9.0.9":
   version: 9.0.9
   resolution: "json-schema-ref-parser@npm:9.0.9"
   dependencies:
@@ -766,6 +806,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"neo-async@npm:^2.6.0":
+  version: 2.6.2
+  resolution: "neo-async@npm:2.6.2"
+  checksum: deac9f8d00eda7b2e5cd1b2549e26e10a0faa70adaa6fdadca701cc55f49ee9018e427f424bac0c790b7c7e2d3068db97f3093f1093975f2acb8f8818b936ed9
+  languageName: node
+  linkType: hard
+
 "next-tick@npm:1, next-tick@npm:^1.1.0":
   version: 1.1.0
   resolution: "next-tick@npm:1.1.0"
@@ -810,6 +857,20 @@ __metadata:
   dependencies:
     wrappy: 1
   checksum: cd0a88501333edd640d95f0d2700fbde6bff20b3d4d9bdc521bdd31af0656b5706570d6c6afe532045a20bb8dc0849f8332d6f2a416e0ba6d3d3b98806c7db68
+  languageName: node
+  linkType: hard
+
+"openapi-typescript-codegen@npm:^0.20.1":
+  version: 0.20.1
+  resolution: "openapi-typescript-codegen@npm:0.20.1"
+  dependencies:
+    camelcase: ^6.3.0
+    commander: ^9.0.0
+    handlebars: ^4.7.7
+    json-schema-ref-parser: ^9.0.9
+  bin:
+    openapi: bin/index.js
+  checksum: f03849f9040994a90a760918f100868d40c16a33af107fe471e6f2a74726916dce54e28efe48762f0ffe36dbda69dcfbfb7390d37bef6662fd28f3316b26d040
   languageName: node
   linkType: hard
 
@@ -878,7 +939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.2.0":
+"prettier@npm:^2.2.0, prettier@npm:^2.6.0":
   version: 2.6.0
   resolution: "prettier@npm:2.6.0"
   bin:
@@ -1025,7 +1086,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map@npm:~0.6.1":
+"source-map@npm:^0.6.1, source-map@npm:~0.6.1":
   version: 0.6.1
   resolution: "source-map@npm:0.6.1"
   checksum: 59ce8640cf3f3124f64ac289012c2b8bd377c238e316fb323ea22fbfe83da07d81e000071d7242cad7a23cd91c7de98e4df8830ec3f133cb6133a5f6e9f67bc2
@@ -1180,6 +1241,15 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 40b493a71747fb89fa70df104e2c4a5e284b43750af5bea024090a5261cefa387f7a9372411b13030f7bf5555cee4275443d08805642ae5c74ef76740854a4c7
+  languageName: node
+  linkType: hard
+
+"uglify-js@npm:^3.1.4":
+  version: 3.15.3
+  resolution: "uglify-js@npm:3.15.3"
+  bin:
+    uglifyjs: bin/uglifyjs
+  checksum: 5d2f5a8591b84d81317783205ba26c7a94c435476c19df8612024d28986acbe1f5dbd65bc604134a8557a3f64e8a5ed2660d11e2ba74b59af1fe531fd5506b16
   languageName: node
   linkType: hard
 

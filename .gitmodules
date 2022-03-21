@@ -4,3 +4,6 @@
 [submodule "c-lightning.ts"]
 	path = c-lightning.ts
 	url = https://github.com/runcitadel/c-lightning.ts
+[submodule "src/openapi-typescript-codegen"]
+	path = src/openapi-typescript-codegen
+	url = https://github.com/ferdikoomen/openapi-typescript-codegen

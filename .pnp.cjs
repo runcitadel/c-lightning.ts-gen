@@ -33,14 +33,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         [null, {\
           "packageLocation": "./",\
           "packageDependencies": [\
+            ["@types/handlebars", "npm:4.1.0"],\
             ["@types/node", "npm:17.0.21"],\
             ["@types/pascalcase", "npm:1.0.1"],\
+            ["@types/prettier", "npm:2.4.4"],\
             ["@types/readable-stream", "npm:2.3.13"],\
             ["@types/urijs", "npm:1.19.19"],\
             ["camelcase", "npm:6.3.0"],\
+            ["handlebars", "npm:4.7.7"],\
+            ["json-schema-ref-parser", "npm:9.0.9"],\
             ["json-schema-to-typescript", "npm:10.1.5"],\
             ["lodash", "npm:4.17.21"],\
+            ["openapi-typescript-codegen", "npm:0.20.1"],\
             ["pascalcase", "npm:2.0.0"],\
+            ["prettier", "npm:2.6.0"],\
             ["quicktype-core", "npm:6.0.70"],\
             ["typescript", "patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"]\
           ],\
@@ -85,14 +91,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./",\
           "packageDependencies": [\
             ["@runcitadel/c-lightning-client-generator", "workspace:."],\
+            ["@types/handlebars", "npm:4.1.0"],\
             ["@types/node", "npm:17.0.21"],\
             ["@types/pascalcase", "npm:1.0.1"],\
+            ["@types/prettier", "npm:2.4.4"],\
             ["@types/readable-stream", "npm:2.3.13"],\
             ["@types/urijs", "npm:1.19.19"],\
             ["camelcase", "npm:6.3.0"],\
+            ["handlebars", "npm:4.7.7"],\
+            ["json-schema-ref-parser", "npm:9.0.9"],\
             ["json-schema-to-typescript", "npm:10.1.5"],\
             ["lodash", "npm:4.17.21"],\
+            ["openapi-typescript-codegen", "npm:0.20.1"],\
             ["pascalcase", "npm:2.0.0"],\
+            ["prettier", "npm:2.6.0"],\
             ["quicktype-core", "npm:6.0.70"],\
             ["typescript", "patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"]\
           ],\
@@ -106,6 +118,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:7.2.0"],\
             ["@types/minimatch", "npm:3.0.5"],\
             ["@types/node", "npm:17.0.21"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/handlebars", [\
+        ["npm:4.1.0", {\
+          "packageLocation": "./.yarn/cache/@types-handlebars-npm-4.1.0-1ef61838a5-536d9f690c.zip/node_modules/@types/handlebars/",\
+          "packageDependencies": [\
+            ["@types/handlebars", "npm:4.1.0"],\
+            ["handlebars", "npm:4.7.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -308,6 +330,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/collection-utils-npm-1.0.1-1dac197290-3e40f062f2.zip/node_modules/collection-utils/",\
           "packageDependencies": [\
             ["collection-utils", "npm:1.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["commander", [\
+        ["npm:9.1.0", {\
+          "packageLocation": "./.yarn/cache/commander-npm-9.1.0-516d19937f-1428319b6b.zip/node_modules/commander/",\
+          "packageDependencies": [\
+            ["commander", "npm:9.1.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -616,6 +647,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["handlebars", [\
+        ["npm:4.7.7", {\
+          "packageLocation": "./.yarn/cache/handlebars-npm-4.7.7-a9ccfabf80-1e79a43f5e.zip/node_modules/handlebars/",\
+          "packageDependencies": [\
+            ["handlebars", "npm:4.7.7"],\
+            ["minimist", "npm:1.2.5"],\
+            ["neo-async", "npm:2.6.2"],\
+            ["source-map", "npm:0.6.1"],\
+            ["uglify-js", "npm:3.15.3"],\
+            ["wordwrap", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["has", [\
         ["npm:1.0.3", {\
           "packageLocation": "./.yarn/cache/has-npm-1.0.3-b7f00631c1-b9ad53d53b.zip/node_modules/has/",\
@@ -908,6 +953,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["neo-async", [\
+        ["npm:2.6.2", {\
+          "packageLocation": "./.yarn/cache/neo-async-npm-2.6.2-75d6902586-deac9f8d00.zip/node_modules/neo-async/",\
+          "packageDependencies": [\
+            ["neo-async", "npm:2.6.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["next-tick", [\
         ["npm:1.1.0", {\
           "packageLocation": "./.yarn/cache/next-tick-npm-1.1.0-e0eb60d6a4-83b5cf3602.zip/node_modules/next-tick/",\
@@ -961,6 +1015,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["once", "npm:1.4.0"],\
             ["wrappy", "npm:1.0.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["openapi-typescript-codegen", [\
+        ["npm:0.20.1", {\
+          "packageLocation": "./.yarn/cache/openapi-typescript-codegen-npm-0.20.1-7ec4e25d5d-f03849f904.zip/node_modules/openapi-typescript-codegen/",\
+          "packageDependencies": [\
+            ["openapi-typescript-codegen", "npm:0.20.1"],\
+            ["camelcase", "npm:6.3.0"],\
+            ["commander", "npm:9.1.0"],\
+            ["handlebars", "npm:4.7.7"],\
+            ["json-schema-ref-parser", "npm:9.0.9"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -1343,6 +1410,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/typescript-patch-8338853a82-40b493a717.zip/node_modules/typescript/",\
           "packageDependencies": [\
             ["typescript", "patch:typescript@npm%3A4.6.2#~builtin<compat/typescript>::version=4.6.2&hash=bda367"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["uglify-js", [\
+        ["npm:3.15.3", {\
+          "packageLocation": "./.yarn/cache/uglify-js-npm-3.15.3-27dcfc5278-5d2f5a8591.zip/node_modules/uglify-js/",\
+          "packageDependencies": [\
+            ["uglify-js", "npm:3.15.3"]\
           ],\
           "linkType": "HARD"\
         }]\
