@@ -1,7 +1,7 @@
 {
   "info": {
     "title": "C-Lightning-REST",
-    "version": "0.6.0",
+    "version": "0.7.0",
     "description": "REST API suite for C-Lightning"
   },
   "host": "localhost:3001",
@@ -50,21 +50,44 @@
             "name": "announce",
             "description": "Flag to announce the channel (true, false)",
             "type": "string",
-            "default": true
+            "default": "true"
           },
           {
             "in": "body",
             "name": "minConf",
             "description": "Minimum number of confirmations that used outputs should have",
-            "type": "integer",
-            "default": 1
+            "type": "integer"
           },
           {
             "in": "body",
             "name": "utxos",
             "description": "Specifies the utxos to be used to fund the channel, as an array of \"txid:vout\"",
             "type": "array",
-            "items": "string"
+            "items": { "type": "string" }
+          },
+          {
+            "in": "body",
+            "name": "push_msat",
+            "description": "Amount of millisatoshis to push to the channel peer at open",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "close_to",
+            "description": "Bitcoin address to which the channel funds should be sent to on close",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "request_amt",
+            "description": "Amount of liquidity you'd like to lease from the peer",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "compact_lease",
+            "description": "Compact represenation of the peer's expected channel lease terms",
+            "type": "string"
           }
         ],
         "responses": {
@@ -417,6 +440,340 @@
                     }
                   }
                 }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/channel/funderUpdate": {
+      "post": {
+        "tags": ["Channel Management"],
+        "name": "funderupdate",
+        "summary": "Adjust the node policy for dual funded channels and liquidity ads",
+        "description": "Core documentation - https://lightning.readthedocs.io/lightning-funderupdate.7.html",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "policy",
+            "description": "How much capital to commit to a v2 open channel request. e.g. match/available/fixed",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "policy_mod",
+            "description": "The policy_mod is the number or 'modification' to apply to the policy",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "leases_only",
+            "description": "will only contribute funds to option_will_fund requests which pay to lease funds. Default to false",
+            "type": "binary"
+          },
+          {
+            "in": "body",
+            "name": "min_their_funding_msat",
+            "description": "Min funding sats that we require in order to activate our contribution policy to the v2 open. Defaults to 10k sats",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "max_their_funding_msat",
+            "description": "Any channel open above this will not be funded",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "per_channel_min_msat",
+            "description": "Min amount that we will contribute to a channel open. Defaults to 10k sats",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "per_channel_max_msat",
+            "description": "Max amount that we will contribute to a channel open",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "reserve_tank_msat",
+            "description": "Amount of sats to leave available in the node wallet. Defaults to zero sats.",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "fuzz_percent",
+            "description": "Percentage to fuzz the resulting contribution amount by. Valid values are 0 to 100. Default 0",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "fund_probability",
+            "description": "Percentage of v2 channel open requests to apply our policy to. Valid values are 0 to 100. Default 100",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "lease_fee_base_msat",
+            "description": "Flat fee for a channel lease. Defaults to 2k sats",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "lease_fee_basis",
+            "description": "Basis fee that's calculated as 1/10k of the total requested funds the peer is asking for. Defaults to 65 bp",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "funding_weight",
+            "description": "used to calculate the fee the peer will compensate your node for its contributing inputs to the funding transaction. Default is 2 inputs + 1 P2WPKH output",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "channel_fee_max_base_msat",
+            "description": "Commitment to a max base fee that your node will charge for routing payments. Default is 5k sats",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "channel_fee_max_proportional_thousandths",
+            "description": "Commitment to a max fee rate that your node will charge for routing payments. Default is 100k ppm",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "compact_lease",
+            "description": "Compact description of the channel lease params",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Funding policy updated successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "string",
+                  "description": "Summary of the current funding policy"
+                },
+                "policy": { "type": "string", "description": "policy" },
+                "policy_mod": { "type": "string", "description": "policy_mod" },
+                "leases_only": {
+                  "type": "string",
+                  "description": "leases_only"
+                },
+                "min_their_funding_msat": {
+                  "type": "string",
+                  "description": "min_their_funding_msat"
+                },
+                "max_their_funding_msat": {
+                  "type": "string",
+                  "description": "max_their_funding_msat"
+                },
+                "per_channel_min_msat": {
+                  "type": "string",
+                  "description": "per_channel_min_msat"
+                },
+                "per_channel_max_msat": {
+                  "type": "string",
+                  "description": "per_channel_max_msat"
+                },
+                "reserve_tank_msat": {
+                  "type": "string",
+                  "description": "reserve_tank_msat"
+                },
+                "fuzz_percent": {
+                  "type": "string",
+                  "description": "fuzz_percent"
+                },
+                "fund_probability": {
+                  "type": "string",
+                  "description": "fund_probability"
+                },
+                "lease_fee_base_msat": {
+                  "type": "string",
+                  "description": "lease_fee_base_msat"
+                },
+                "lease_fee_basis": {
+                  "type": "string",
+                  "description": "lease_fee_basis"
+                },
+                "funding_weight": {
+                  "type": "string",
+                  "description": "funding_weight"
+                },
+                "channel_fee_max_base_msat": {
+                  "type": "string",
+                  "description": "channel_fee_max_base_msat"
+                },
+                "channel_fee_max_proportional_thousandths": {
+                  "type": "string",
+                  "description": "channel_fee_max_proportional_thousandths"
+                },
+                "compact_lease": {
+                  "type": "string",
+                  "description": "compact_lease"
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/datastore": {
+      "post": {
+        "tags": ["Data Store"],
+        "name": "datastore",
+        "summary": "The datastore RPC command allows plugins to store data in the c-lightning database, for later retrieval",
+        "description": "Core documentation - https://lightning.readthedocs.io/lightning-datastore.7.html",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "key",
+            "description": "Array of values to form a heirarchy. A key can either have children or a value, never both",
+            "type": "array",
+            "items": { "type": "string" },
+            "required": ["key"]
+          },
+          {
+            "in": "body",
+            "name": "dataString",
+            "description": "Value of the element",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "hex",
+            "description": "Value of the element",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "mode",
+            "description": "One of must-create/must-replace/create-or-replace/must-append/create-or-append",
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "generation",
+            "description": "If specified, means that the update will fail if the previously-existing data is not exactly that generation",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "On success, an object is returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "key added to the datastore"
+                },
+                "generation": { "type": "string", "description": "generation" },
+                "hex": { "type": "string", "description": "hex" },
+                "dataString": { "type": "string", "description": "dataString" }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/datastore/listDatastore": {
+      "get": {
+        "tags": ["Data Store"],
+        "name": "listdatastore",
+        "summary": "Allows plugins to fetch data which was stored in the c-lightning database",
+        "description": "Core documentation - https://lightning.readthedocs.io/lightning-listdatastore.7.html",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "key",
+            "description": "key to list from the datastore",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "On success, an object containing datastore is returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "datastore": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "array",
+                        "items": { "type": "string" },
+                        "description": "key added to the datastore"
+                      },
+                      "generation": {
+                        "type": "string",
+                        "description": "generation"
+                      },
+                      "hex": { "type": "string", "description": "hex" },
+                      "dataString": {
+                        "type": "string",
+                        "description": "dataString"
+                      }
+                    }
+                  },
+                  "description": "datastore"
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/datastore/delDatastore": {
+      "delete": {
+        "tags": ["Data Store"],
+        "name": "deldatastore",
+        "summary": "Allows plugins to delete data it has stored in the c-lightning database",
+        "description": "Core documentation - https://lightning.readthedocs.io/lightning-deldatastore.7.html",
+        "parameters": [
+          {
+            "in": "route",
+            "name": "key",
+            "description": "Specify the key to reference the data to delete",
+            "type": "string",
+            "required": ["key"]
+          },
+          {
+            "in": "query",
+            "name": "generation",
+            "description": "The specific version of datastore which needs to be deleted",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "The data element deleted successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "array",
+                  "items": { "type": "string" },
+                  "description": "key added to the datastore"
+                },
+                "generation": { "type": "string", "description": "generation" },
+                "hex": { "type": "string", "description": "hex" },
+                "dataString": { "type": "string", "description": "dataString" }
               }
             }
           },
@@ -1271,6 +1628,82 @@
         }
       }
     },
+    "/network/listNodes": {
+      "get": {
+        "tags": ["Network Information"],
+        "name": "listnodes",
+        "summary": "Gets the node information from the network graph",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "id",
+            "description": "Pub key of the node",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Node data fetched successfully",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "nodeid": { "type": "string", "description": "nodeid" },
+                  "alias": { "type": "string", "description": "alias" },
+                  "color": { "type": "string", "description": "color" },
+                  "last_timestamp": {
+                    "type": "integer",
+                    "description": "last_timestamp"
+                  },
+                  "features": { "type": "string", "description": "features" },
+                  "address": {
+                    "type": "object",
+                    "properties": {
+                      "type": { "type": "string", "description": "type" },
+                      "address": { "type": "string", "description": "address" },
+                      "port": { "type": "string", "description": "port" }
+                    },
+                    "description": "address"
+                  },
+                  "option_will_fund": {
+                    "type": "object",
+                    "properties": {
+                      "lease_fee_base_msat": {
+                        "type": "string",
+                        "description": "lease_fee_base_msat"
+                      },
+                      "lease_fee_basis": {
+                        "type": "string",
+                        "description": "lease_fee_basis"
+                      },
+                      "funding_weight": {
+                        "type": "string",
+                        "description": "funding_weight"
+                      },
+                      "channel_fee_max_base_msat": {
+                        "type": "string",
+                        "description": "channel_fee_max_base_msat"
+                      },
+                      "channel_fee_max_proportional_thousandths": {
+                        "type": "string",
+                        "description": "channel_fee_max_proportional_thousandths"
+                      },
+                      "compact_lease": {
+                        "type": "string",
+                        "description": "compact_lease"
+                      }
+                    },
+                    "description": "option_will_funds"
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
     "/newaddr": {
       "get": {
         "tags": ["On-Chain fund management"],
@@ -1428,7 +1861,7 @@
         }
       }
     },
-    "/channel/listOffers": {
+    "/offers/listOffers": {
       "get": {
         "tags": ["Offers"],
         "name": "listoffers",
@@ -2206,16 +2639,15 @@
           {
             "in": "body",
             "name": "minConf",
-            "description": "minimum number of confirmations that used outputs should have",
             "type": "integer",
-            "default": 1
+            "description": "minimum number of confirmations that used outputs should have"
           },
           {
             "in": "body",
             "name": "utxos",
             "description": "Specifies the utxos to be used to fund the channel, as an array of \"txid:vout\"",
             "type": "array",
-            "items": "string"
+            "items": { "type": "string" }
           }
         ],
         "responses": {

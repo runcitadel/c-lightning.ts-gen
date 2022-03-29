@@ -10,4 +10,4 @@
 #/.pnp.*
 
 # Compiled TypeScript
-lib
+/lib
